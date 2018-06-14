@@ -14,7 +14,6 @@ namespace ToDoList
     {
         public static void Main(string[] args)
         {
-            object
             var host = new WebHostBuilder()
             .UseKestrel()
             .UseContentRoot(Directory.GetCurrentDirectory())
