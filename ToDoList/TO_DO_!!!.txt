@@ -1,0 +1,9 @@
+﻿Swagger - done
+validation
+Rabbit
+Docker
+EsLint
+Git hub
+logger
+port set - done
+NodeMon - done
