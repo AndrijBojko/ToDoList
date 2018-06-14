@@ -1,4 +1,4 @@
-﻿Swagger - done
+﻿swagger - done
 Model validation
 Rabbit
 Docker
