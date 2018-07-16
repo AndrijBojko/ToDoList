@@ -5,6 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using ToDoList.Models;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Swagger;
+using ToDoList.Interfaces;
+using ToDoList.Repositories;
+using System.Diagnostics;
 
 namespace ToDoList
 {
@@ -17,21 +20,17 @@ namespace ToDoList
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connection = @"data source=desktop-fps9muh;initial catalog=ToDoDb;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework";
-            services.AddDbContext<Context>(opt => opt.UseSqlServer(connection));
+            services.AddDbContext<Context>(opt => opt.UseSqlServer(Configuration.GetConnectionString("ToDoDb")));
             services.AddMvc();
 
             // Register the Swagger generator, defining one or more Swagger documents
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new Info { Title = "ToDo API", Version = "v1" });
-            });
+            services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Info { Title = "ToDo API", Version = "v1" }));
+
+            services.AddTransient<ITaskRepository, TaskRepository>();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -43,10 +42,7 @@ namespace ToDoList
             app.UseSwagger();
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "ToDo API V1");
-            });
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ToDo API V1"));
 
             app.UseMvc();
         }

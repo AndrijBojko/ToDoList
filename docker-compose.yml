@@ -1,8 +1,16 @@
-version: '3'
+version: '3.4'
 
 services:
-  todolist:
-    image: todolist
-    build:
-      context: .
-      dockerfile: ToDoList\Dockerfile
+    api:
+        build: .
+        ports:
+            - "8000:80"
+        depends_on:
+            - db
+    db:
+        image: "microsoft/mssql-server-linux"
+        environment:
+            SA_PASSWORD: "Your_password123"
+            ACCEPT_EULA: "Y"
+        ports:
+            - "5432:1433"

@@ -1,9 +1,9 @@
 ﻿swagger - done
-Model validation
+Model validation +-
 Rabbit
 Docker
 EsLint
-Git hub
-logger
+Git hub done
+logger  done
 port set - done
 dotnet watch - done

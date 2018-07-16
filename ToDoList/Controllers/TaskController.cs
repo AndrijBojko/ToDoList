@@ -3,6 +3,7 @@ using ToDoList.Models;
 using ToDoList.Repositories;
 using ToDoList.Interfaces;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace ToDoList.Controllers
 {
@@ -10,10 +11,12 @@ namespace ToDoList.Controllers
     public class TaskController : Controller
     {
         private readonly ITaskRepository _repository;
+        private readonly ILogger _logger;
 
-        public TaskController(Context context)
+        public TaskController(ITaskRepository repo, ILogger<TaskController> logger)
         {
-            _repository = new TaskRepository(context);
+            _repository = repo;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -25,9 +28,12 @@ namespace ToDoList.Controllers
         [HttpGet("{id}", Name = "GetTodo")]
         public IActionResult GetById(int id)
         {
+            _logger.LogInformation($"Getting item {id}");
             var item = _repository.GetById(id);
+
             if (item == null)
             {
+                _logger.LogWarning($"Item {id} not found");
                 return NotFound();
             }
             return new ObjectResult(item);
