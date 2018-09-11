@@ -19,7 +19,7 @@ namespace ToDoList.Repositories
             return _context.ToDoItems.ToList();
         }
 
-        public ToDoItem GetById(int id)
+        public ToDoItem GetById(int? id)
         {
             return _context.ToDoItems.FirstOrDefault(t => t.Id == id);
 
@@ -31,13 +31,8 @@ namespace ToDoList.Repositories
             _context.SaveChanges();
         }
 
-        public void Update(int id, ToDoItem item)
+        public void Update(int? id, ToDoItem item)
         {
-            if (item == null || item.Id != id)
-            {
-                return;
-            }
-
             var todo = _context.ToDoItems.FirstOrDefault(t => t.Id == id);
             if (todo == null)
             {
@@ -45,7 +40,7 @@ namespace ToDoList.Repositories
             }
 
             todo.IsCompleted = item.IsCompleted;
-            todo.Name = item.Name;
+            todo.Description = item.Description;
 
             _context.ToDoItems.Update(todo);
             _context.SaveChanges();

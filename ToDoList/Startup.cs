@@ -38,6 +38,13 @@ namespace ToDoList
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials()
+                );
+
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 

@@ -15,8 +15,13 @@ namespace ToDoList
     {
         public static void Main(string[] args)
         {
-            var host = new WebHostBuilder()
-            .UseKestrel()
+            BuildWebHost(args).Run();
+        }
+
+
+        public static IWebHost BuildWebHost(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+                .UseKestrel()
             .UseContentRoot(Directory.GetCurrentDirectory())
             .UseIISIntegration()
             .ConfigureAppConfiguration((hostingContext, config) =>
@@ -27,16 +32,13 @@ namespace ToDoList
                 config.AddEnvironmentVariables();
             })
             .ConfigureLogging((hostingContext, logging) =>
-             {
-                 logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-                 logging.AddConsole();
-                 logging.AddDebug();
-             })
+            {
+                logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                logging.AddConsole();
+                logging.AddDebug();
+            })
             .UseStartup<Startup>()
             .UseUrls(urls: "http://localhost:3001/")
             .Build();
-
-            host.Run();
-        }
     }
 }

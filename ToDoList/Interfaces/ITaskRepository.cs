@@ -7,9 +7,9 @@ namespace ToDoList.Interfaces
     public interface ITaskRepository
     {
         IEnumerable<ToDoItem> GetAll();
-        ToDoItem GetById(int id);
+        ToDoItem GetById(int? id);
         void Create(ToDoItem item);
-        void Update(int id, ToDoItem item);
+        void Update(int? id, ToDoItem item);
         void Delete(int id);
     }
 }

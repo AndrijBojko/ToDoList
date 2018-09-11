@@ -42,7 +42,7 @@ namespace ToDoList.Controllers
         [HttpPost]
         public IActionResult Create([FromBody] ToDoItem item)
         {
-            if (item == null)
+            if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
@@ -53,9 +53,9 @@ namespace ToDoList.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] ToDoItem item)
+        public IActionResult Update(int? id, [FromBody] ToDoItem item)
         {
-            if (item == null || item.Id != id)
+            if (!ModelState.IsValid || id == null)
             {
                 return BadRequest();
             }
