@@ -7,3 +7,12 @@ Git hub done
 logger  done
 port set - done
 dotnet watch - done
+
+
+validatuion
+додати остааню таску як +(модальне вікно зробити), і забрати add task
+
+refresh token
+reset pass
+sign out
+email verification

@@ -11,5 +11,8 @@ namespace ToDoList.Models
         public string Description { get; set; }
         [Required]
         public bool IsCompleted { get; set; }
+
+        public string IdentityId { get; set; }
+        public User Identity { get; set; }
     }
 }

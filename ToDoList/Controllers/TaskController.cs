@@ -1,35 +1,49 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ToDoList.Models;
-using ToDoList.Repositories;
 using ToDoList.Interfaces;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ToDoList.Controllers
 {
+    [Authorize(Policy = "ApiUser")]
     [Route("api/[controller]")]
     public class TaskController : Controller
     {
         private readonly ITaskRepository _repository;
         private readonly ILogger _logger;
+        private readonly ClaimsPrincipal _caller;
+        private readonly Context _appDbContext;
 
-        public TaskController(ITaskRepository repo, ILogger<TaskController> logger)
+        public TaskController(ITaskRepository repo, ILogger<TaskController> logger, UserManager<User> userManager, Context appDbContext, IHttpContextAccessor httpContextAccessor)
         {
             _repository = repo;
             _logger = logger;
+            _caller = httpContextAccessor.HttpContext.User;
+            _appDbContext = appDbContext;
         }
 
+
         [HttpGet]
-        public IEnumerable<ToDoItem> GetAll()
+        public async Task<IEnumerable<ToDoItem>> GetAll()
         {
-            return _repository.GetAll();
+            var userId = _caller.Claims.Single(c => c.Type == "id").Value; 
+           
+            return await _repository.GetAllAsync(userId);
         }
 
         [HttpGet("{id}", Name = "GetTodo")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             _logger.LogInformation($"Getting item {id}");
-            var item = _repository.GetById(id);
+
+            var item = await _repository.GetByIdAsync(id);
 
             if (item == null)
             {
@@ -40,46 +54,56 @@ namespace ToDoList.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] ToDoItem item)
+        public async Task<IActionResult> Create([FromBody] ToDoItem item)
         {
+            var userId = _caller.Claims.Single(c => c.Type == "id").Value;
+            item.IdentityId = userId;
+
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
 
-            _repository.Create(item);
+            await _repository.CreateAsync(item);
+            await _repository.SaveAsync();
 
             return CreatedAtRoute("GetTodo", new { id = item.Id }, item);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int? id, [FromBody] ToDoItem item)
+        public async Task<IActionResult> Update(int? id, [FromBody] ToDoItem item)
         {
             if (!ModelState.IsValid || id == null)
             {
                 return BadRequest();
             }
 
-            var task = _repository.GetById(id);
+            var task = await _repository.GetByIdAsync(id);
             if (task == null)
             {
                 return NotFound();
             }
 
-            _repository.Update(id, item);
+            var userId = _caller.Claims.Single(c => c.Type == "id").Value;
+            item.IdentityId = userId;
+
+            await _repository.UpdateAsync(id, item);
+            await _repository.SaveAsync();
+
             return new NoContentResult();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var task = _repository.GetById(id);
+            var task = await _repository.GetByIdAsync(id);
             if (task == null)
             {
                 return NotFound();
             }
 
-            _repository.Delete(id);
+            await _repository.DeleteAsync(id);
+            await _repository.SaveAsync();
             return new NoContentResult();
         }
 
